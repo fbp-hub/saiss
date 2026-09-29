@@ -1,258 +1,231 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="h-full bg-slate-950">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Acceso Privado</title>
-  <style>
-    :root {
-      --bg-color: #0f172a;
-      --card-bg: rgba(30, 41, 59, 0.7);
-      --accent-color: #6366f1;
-      --accent-hover: #4f46e5;
-      --text-color: #f8fafc;
-      --text-muted: #94a3b8;
-      --error-color: #ef4444;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso Privado a Video</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+        .animate-shake {
+            animation: shake 0.4s cubic-bezier(.36, .07, .19, .97) both;
+        }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    }
-
-    body {
-      background: radial-gradient(circle at top left, #1e1b4b, var(--bg-color));
-      color: var(--text-color);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 900px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .card {
-      background: var(--card-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 20px;
-      padding: 40px 30px;
-      width: 100%;
-      max-width: 420px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-      text-align: center;
-      transition: all 0.3s ease;
-    }
-
-    .card h1 {
-      font-size: 1.6rem;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    .card p {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      margin-bottom: 24px;
-    }
-
-    .input-group {
-      margin-bottom: 20px;
-      text-align: left;
-    }
-
-    .input-group label {
-      display: block;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-    }
-
-    .input-group input {
-      width: 100%;
-      padding: 14px 16px;
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 12px;
-      color: #fff;
-      font-size: 1rem;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    .input-group input:focus {
-      border-color: var(--accent-color);
-    }
-
-    button {
-      width: 100%;
-      padding: 14px;
-      background: var(--accent-color);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-    }
-
-    button:hover {
-      background: var(--accent-hover);
-    }
-
-    button:active {
-      transform: scale(0.98);
-    }
-
-    .error-msg {
-      color: var(--error-color);
-      font-size: 0.85rem;
-      margin-top: 12px;
-      display: none;
-    }
-
-    /* Animación de error (sacudida) */
-    .shake {
-      animation: shake 0.4s ease-in-out;
-    }
-
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-8px); }
-      40%, 80% { transform: translateX(8px); }
-    }
-
-    /* Contenedor del reproductor cuando se desbloquea */
-    #video-wrapper {
-      display: none;
-      width: 100%;
-      background: #000;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-    }
-  </style>
+        .glass-card {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
 </head>
-<body>
+<body class="h-full text-slate-100 font-sans antialiased selection:bg-indigo-500 selection:text-white flex flex-col justify-between overflow-x-hidden">
 
-  <div class="container">
-    <!-- Formulario de contraseña -->
-    <div class="card" id="lock-card">
-      <h1>Contenido Protegido</h1>
-      <p>Introduce la contraseña de acceso para reproducir el vídeo.</p>
-      
-      <form id="pass-form" onsubmit="event.preventDefault(); unlockVideo();">
-        <div class="input-group">
-          <label for="password">Contraseña</label>
-          <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
-        </div>
-        <button type="submit" id="submit-btn">Acceder</button>
-        <div id="error-msg" class="error-msg">Contraseña incorrecta. Inténtalo de nuevo.</div>
-      </form>
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div class="absolute -top-40 -left-40 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl"></div>
+        <div class="absolute top-1/2 -right-40 w-96 h-96 bg-purple-600/15 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-40 left-1/3 w-96 h-96 bg-blue-600/15 rounded-full blur-3xl"></div>
     </div>
 
-    <!-- Contenedor del Vídeo Decodificado -->
-    <div id="video-wrapper"></div>
-  </div>
+    <main class="relative z-10 flex-grow flex items-center justify-center p-4 sm:p-6 lg:p-8">
 
-  <script>
-    // Cadena cifrada con AES-GCM (NO contiene texto plano)
-    const ENCRYPTED_PAYLOAD = {
-      salt: "7320616973733230323673616c743031",
-      iv: "663161323362346335643665",
-      ciphertext: "3a07ed4715f33333e6f66ea6d81eaed141f1ca9e04fbe7d5ebf6004b5a4ce8d19d186c3eb9ad4b3f88647009bb33e08f23f6cb4025d57b44747eb6ecf945038c35f29910d643fe7d0cff0fe12f2bc7d25e408ec2e5c8eebf0f975eb1ed4fbd103bda98c6bcfa24fbe29f37c35ff6412f719aa2df93ee7248f7eeef6b29cd1331be272eb9fa60814a04d60a169b1396a8eb881aa59dbbeea91cb09ed4117b96057a1b026cc358d34346caeaed88c039757f59dcc81ce024347eb1bd"
-    };
+        <!-- LOGIN CARD -->
+        <div id="login-card" class="w-full max-w-md glass-card rounded-2xl shadow-2xl p-6 sm:p-8 transition-all duration-500 ease-in-out transform scale-100 opacity-100">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 mb-4 shadow-inner">
+                    <i data-lucide="shield-lock" class="w-8 h-8"></i>
+                </div>
+                <h1 class="text-2xl font-bold tracking-tight text-white sm:text-3xl">Acceso Restringido</h1>
+                <p class="text-sm text-slate-400 mt-2">Introduce la clave de acceso para ver el contenido exclusivo.</p>
+            </div>
 
-    // Auxiliar para convertir hexadecimal a bytes
-    function hexToBytes(hex) {
-      const bytes = new Uint8Array(hex.length / 2);
-      for (let i = 0; i < hex.length; i += 2) {
-        bytes[i / 2] = parseInt(hex.substr(i, 2), 16);
-      }
-      return bytes;
-    }
+            <form id="password-form" class="space-y-5" onsubmit="return false;">
+                <div>
+                    <label for="password-input" class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">Contraseña</label>
+                    <div class="relative">
+                        <input 
+                            type="password" 
+                            id="password-input" 
+                            placeholder="••••••••••••" 
+                            class="w-full px-4 py-3 pr-12 bg-slate-900/80 border border-slate-700/80 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 text-sm"
+                            autocomplete="current-password"
+                            required
+                        >
+                        <button 
+                            type="button" 
+                            id="toggle-password-btn" 
+                            class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 p-1.5 focus:outline-none rounded-lg transition-colors"
+                            aria-label="Mostrar u ocultar contraseña"
+                        >
+                            <i data-lucide="eye" id="eye-icon" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                    <div id="error-message" class="hidden items-center gap-2 mt-2.5 text-xs text-rose-400 font-medium">
+                        <i data-lucide="alert-circle" class="w-4 h-4 shrink-0"></i>
+                        <span>Contraseña incorrecta. Inténtalo de nuevo.</span>
+                    </div>
+                </div>
 
-    // Derivación de clave mediante PBKDF2
-    async function deriveKey(password, saltBytes) {
-      const enc = new TextEncoder();
-      const keyMaterial = await crypto.subtle.importKey(
-        "raw",
-        enc.encode(password),
-        "PBKDF2",
-        false,
-        ["deriveKey"]
-      );
-      return crypto.subtle.deriveKey(
-        {
-          name: "PBKDF2",
-          salt: saltBytes,
-          iterations: 100000,
-          hash: "SHA-256"
-        },
-        keyMaterial,
-        { name: "AES-GCM", length: 256 },
-        false,
-        ["decrypt"]
-      );
-    }
+                <button 
+                    type="submit" 
+                    id="submit-btn" 
+                    class="w-full py-3.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm rounded-xl shadow-lg shadow-indigo-600/30 hover:shadow-indigo-500/40 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900 active:scale-[0.99] transition-all duration-200 flex items-center justify-center gap-2"
+                >
+                    <span>Desbloquear y Ver Video</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+            </form>
 
-    // Función principal para desencriptar el reproductor
-    async function unlockVideo() {
-      const passInput = document.getElementById("password").value;
-      const errorMsg = document.getElementById("error-msg");
-      const lockCard = document.getElementById("lock-card");
-      const submitBtn = document.getElementById("submit-btn");
+            <div class="mt-6 text-center border-t border-slate-800/80 pt-4">
+                <p class="text-xs text-slate-500">Alojado en GitHub Pages</p>
+            </div>
+        </div>
 
-      errorMsg.style.display = "none";
-      submitBtn.disabled = true;
-      submitBtn.innerText = "Verificando...";
+        <!-- UNLOCKED VIDEO CONTAINER -->
+        <div id="video-container" class="hidden w-full max-w-4xl glass-card rounded-2xl shadow-2xl overflow-hidden transition-all duration-500 opacity-0 transform scale-95">
+            <!-- Header bar -->
+            <div class="px-6 py-4 border-b border-slate-800 bg-slate-900/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 bg-indigo-500/10 rounded-lg text-indigo-400 border border-indigo-500/20">
+                        <i data-lucide="play-circle" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-bold text-white leading-tight">Video Privado</h2>
+                        <span class="inline-flex items-center gap-1.5 text-xs text-emerald-400 font-medium">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Acceso Autorizado
+                        </span>
+                    </div>
+                </div>
+                <button 
+                    id="lock-btn" 
+                    class="w-full sm:w-auto px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-slate-600"
+                >
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                    <span>Cerrar Sesión</span>
+                </button>
+            </div>
 
-      try {
-        const saltBytes = hexToBytes(ENCRYPTED_PAYLOAD.salt);
-        const ivBytes = hexToBytes(ENCRYPTED_PAYLOAD.iv);
-        const cipherBytes = hexToBytes(ENCRYPTED_PAYLOAD.ciphertext);
+            <!-- EMBEDDED STREAMABLE VIDEO -->
+            <div class="p-2 sm:p-4 bg-black/50">
+                <div style="position:relative; width:100%; height:0px; padding-bottom:56.250%">
+                    <iframe 
+                        allow="fullscreen" 
+                        allowfullscreen 
+                        height="100%" 
+                        src="https://streamable.com/e/02uhvx?loop=0" 
+                        width="100%" 
+                        style="border:none; width:100%; height:100%; position:absolute; left:0px; top:0px; overflow:hidden; border-radius: 0.75rem;"
+                    ></iframe>
+                </div>
+            </div>
+        </div>
 
-        // Generar clave a partir de la contraseña introducida
-        const key = await deriveKey(passInput, saltBytes);
+    </main>
 
-        // Intentar descifrar el bloque AES-GCM
-        const decryptedBuffer = await crypto.subtle.decrypt(
-          { name: "AES-GCM", iv: ivBytes },
-          key,
-          cipherBytes
-        );
+    <!-- FOOTER -->
+    <footer class="relative z-10 py-4 text-center text-xs text-slate-600">
+        <p>&copy; <span id="current-year"></span> Video Gate - Access</p>
+    </footer>
 
-        const dec = new TextDecoder();
-        const decryptedHtml = dec.decode(decryptedBuffer);
+    <script>
+        const CONFIG = {
+            PASSWORD: "SAISS2026",
+            SESSION_KEY: "saiss_video_unlocked"
+        };
 
-        // Si la desencriptación tiene éxito, inyectamos el HTML del iframe
-        lockCard.style.display = "none";
-        const videoWrapper = document.getElementById("video-wrapper");
-        videoWrapper.innerHTML = decryptedHtml;
-        videoWrapper.style.display = "block";
+        const loginCard = document.getElementById('login-card');
+        const videoContainer = document.getElementById('video-container');
+        const passwordForm = document.getElementById('password-form');
+        const passwordInput = document.getElementById('password-input');
+        const togglePasswordBtn = document.getElementById('toggle-password-btn');
+        const eyeIcon = document.getElementById('eye-icon');
+        const errorMessage = document.getElementById('error-message');
+        const lockBtn = document.getElementById('lock-btn');
 
-      } catch (e) {
-        // Si la clave no es correcta, AES-GCM lanza una excepción
-        submitBtn.disabled = false;
-        submitBtn.innerText = "Acceder";
-        errorMsg.style.display = "block";
-        lockCard.classList.remove("shake");
-        void lockCard.offsetWidth; // Forzar reflow de animación
-        lockCard.classList.add("shake");
-        document.getElementById("password").value = "";
-      }
-    }
-  </script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+        lucide.createIcons();
+
+        // Check session storage on page load
+        if (sessionStorage.getItem(CONFIG.SESSION_KEY) === 'true') {
+            showVideoDirectly();
+        }
+
+        let isPasswordVisible = false;
+        togglePasswordBtn.addEventListener('click', () => {
+            isPasswordVisible = !isPasswordVisible;
+            passwordInput.type = isPasswordVisible ? 'text' : 'password';
+            eyeIcon.setAttribute('data-lucide', isPasswordVisible ? 'eye-off' : 'eye');
+            lucide.createIcons();
+        });
+
+        passwordForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const inputVal = passwordInput.value.trim();
+
+            if (inputVal === CONFIG.PASSWORD) {
+                sessionStorage.setItem(CONFIG.SESSION_KEY, 'true');
+                unlockVideo();
+            } else {
+                triggerErrorAnimation();
+            }
+        });
+
+        function triggerErrorAnimation() {
+            errorMessage.classList.remove('hidden');
+            errorMessage.classList.add('flex');
+
+            loginCard.classList.remove('animate-shake');
+            void loginCard.offsetWidth; // Force reflow
+            loginCard.classList.add('animate-shake');
+
+            passwordInput.value = '';
+            passwordInput.focus();
+        }
+
+        function unlockVideo() {
+            loginCard.classList.remove('scale-100', 'opacity-100');
+            loginCard.classList.add('scale-95', 'opacity-0');
+
+            setTimeout(() => {
+                loginCard.classList.add('hidden');
+                
+                videoContainer.classList.remove('hidden');
+                void videoContainer.offsetWidth; // Force reflow
+                videoContainer.classList.remove('scale-95', 'opacity-0');
+                videoContainer.classList.add('scale-100', 'opacity-100');
+            }, 400);
+        }
+
+        function showVideoDirectly() {
+            loginCard.classList.add('hidden');
+            videoContainer.classList.remove('hidden', 'scale-95', 'opacity-0');
+            videoContainer.classList.add('scale-100', 'opacity-100');
+        }
+
+        lockBtn.addEventListener('click', () => {
+            sessionStorage.removeItem(CONFIG.SESSION_KEY);
+
+            videoContainer.classList.remove('scale-100', 'opacity-100');
+            videoContainer.classList.add('scale-95', 'opacity-0');
+
+            setTimeout(() => {
+                videoContainer.classList.add('hidden');
+                passwordInput.value = '';
+                errorMessage.classList.add('hidden');
+                errorMessage.classList.remove('flex');
+
+                loginCard.classList.remove('hidden');
+                void loginCard.offsetWidth; // Force reflow
+                loginCard.classList.remove('scale-95', 'opacity-0');
+                loginCard.classList.add('scale-100', 'opacity-100');
+                passwordInput.focus();
+            }, 400);
+        });
+    </script>
 </body>
 </html>
